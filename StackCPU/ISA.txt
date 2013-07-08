@@ -1,0 +1,96 @@
+32 Bit Machine
+5 bit operand
+27 bit constants possible
+
+Instruction Set:
+
+No operation
+noop
+Op Code: 0 - 00000
+
+Stack constant
+sc(<constant>)
+Op Code: 1 - 00001
+Push constant value onto stack
+
+Stack load
+sl
+Op Code: 2 - 00010
+Pop stack for address, stack address contents
+
+Stack store
+ss
+Op Code: 3 - 00011
+Pop for address, pop for data, store data at address
+
+Stack compare
+scmp
+Op Code: 4 - 00100
+Pop twice, compare==, set flag
+
+Stack set less than
+sslt
+Op Code: 5 - 00101
+Pop twice, if first_pop < second_pop, set compare flag
+
+Jump
+jmp
+Op Code: 6 - 00110
+Pop address, change PC to that value
+
+Jump if compare is zero
+jz
+Op Code: 7 - 00111
+Pop address, change PC if compare flag is zero
+
+Jump if compare is not zero (is 1)
+jnz
+Op Code: 8 - 01000
+Pop address, change PC if compare flag is one
+
+Subroutine call
+scall
+Op Code: 9 - 01001
+Pop address, pop number of args, pop all args
+Store registers, flags, PC, SP, B
+
+Subroutine return
+srtn
+Op Code: 10 - 01010
+Restore registers and flags, stack result
+
+Stack load argument address
+slaa(<val>)
+Op Code: 11 - 01011
+Get the address of the specified argument and stack it
+
+Allocate
+alloc
+Op Code: 12 - 01100
+Allocate 1 additonal location on the stack
+
+Deallocate
+dealloc
+Op Code: 13 - 01101
+Deallocate 1 space on the stack
+
+Stack load local address
+slla(<val>)
+Op Code: 14 - 01110
+Stack address of specified local variable
+
+Stack Add
+sadd
+Op Code: 15 - 01111
+Pop two operands, perform add, stack result
+
+Stack substract
+ssub
+Op Code: 16 - 10000
+Pop two operands, perform sub first - second, stack result
+
+Stack multiply
+smult
+Op Code: 17 - 10001
+Pop two operands, perform mult, stack result
+

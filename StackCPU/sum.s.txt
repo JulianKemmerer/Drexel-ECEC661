@@ -1,0 +1,88 @@
+; This works after 3800 us
+; i = 0 at addr 0
+; tmp = 0 at addr 1
+; limit = 20 at addr 2
+; for(i=0; i<limit; i++)
+; {
+; 	tmp += i;
+; }
+; All values in decimal
+
+main:
+; store data for i
+sc 0
+; store addr for i
+sc 0
+; Write 0 to i
+ss
+; store data for tmp
+sc 0
+; store addr for tmp
+sc 1
+; Write 0 to tmp
+ss
+; store data for limit
+sc 20
+; store addr for limit
+sc 2
+; Write 20 to limit
+ss
+
+loop:
+;Increment temp by i
+;First stack addr of tmp
+sc 1
+;Stack contents tmp
+sl
+;Stack addr of i
+sc 0
+;Stack contents of i
+sl
+;Add those two values
+sadd
+;Store that value in tmp
+;Data is stacked already
+;Stack addr of tmp
+sc 1
+;Store data at addr
+ss
+
+
+
+;Check if i less than limit
+;stack limit addr
+sc 2
+; stack contents of limit
+sl
+;stack i addr
+sc 0
+; stack contents of i
+sl
+;Compare first pop < second pop
+;Which is i < limit
+sslt
+;Jump is compare flag was true
+;That is, jump if compare flag is not zero
+
+;Before jumping increment i
+;stack addr of i
+sc 0
+;stack contents of i
+sl
+;Stack 1
+sc 1
+;Add i and 1
+sadd
+;Stack addr of i
+sc 0
+;Store that value at i
+ss
+
+;Store value of loop
+sc loop
+;Jump if not zero
+jnz
+
+
+
+

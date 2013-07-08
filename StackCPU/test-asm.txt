@@ -1,0 +1,11 @@
+main:
+sc 100
+sl
+other:
+ss ;comment text
+sc 0 
+;Comment line with stuff
+sc 44
+jmp main
+jmp other
+

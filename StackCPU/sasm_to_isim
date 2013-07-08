@@ -1,0 +1,112 @@
+#!/usr/bin/env python
+import sys
+
+#Loop through each line of the input file
+f = open(sys.argv[1],'r')
+
+comment_symbol = ';'
+arg_delim = ' '
+label_symbol = ':'
+max_args_per_line = 2
+
+#Current instruction address
+inst_addr = 0
+
+#Labels dict
+label_addrs = dict()
+
+#Constants for ISA
+isa=dict()
+isa["noop"] = "00000"
+isa["sc"]="00001"
+isa["sl"]="00010"
+isa["ss"]="00011"
+isa["scmp"]="00100"
+isa["sslt"]="00101"
+isa["jmp"]="00110"
+isa["jz"]="00111"
+isa["jnz"]="01000"
+isa["scall"]="01001"
+isa["srtn"]="01010"
+isa["slaa"]="01011"
+isa["alloc"]="01100"
+isa["dealloc"]="01101"
+isa["slla"]="01110"
+isa["sadd"]="01111"
+isa["ssub"]="10000"
+isa["smult"]="10001"
+
+full_str = ""
+
+def print_for_inst(inst,op,arg_str):
+	#Convert binary to decimal
+	global full_str
+	full_str = full_str + str(inst_addr)  + "	" +str(op)  + "	" + arg_str + "	" + inst + "	" + str(int(inst, 2)) + "	write_ram(" + str(inst_addr) + "," + str(int(inst, 2)) + ");" + '\n'
+	print "write_ram(" + str(inst_addr) + "," + str(int(inst, 2)) + ");"
+
+def convert_arg_to_binary(arg):
+	#Check if this arg is a number or label
+	if(str(arg).isdigit() == False):
+		#Label
+		arg = label_addrs[arg]
+		
+	rv = str(bin(int(arg)))
+	rv = rv[2:]
+	rv = rv.zfill(27)
+	return rv
+	
+def process_with_arg(op, arg):
+	arg_str = convert_arg_to_binary(arg)
+	full_inst = isa[op] + arg_str
+	print_for_inst(full_inst,op,arg)
+
+def process_no_arg(op):
+	#Run with arg = 0
+	process_with_arg(op,str(0))
+	return
+
+def process_asm(asm_line):
+	#split line based arg delim
+	args = asm_line.split(arg_delim)
+	if(len(args) > max_args_per_line):
+		print "Cannot parse line. Too man args. " + asm_line
+	else:
+		#First arg should be operand
+		if(len(args) == 1):	
+			process_no_arg(args[0]);
+		else:
+			process_with_arg(args[0], args[1])
+			
+def process_label(label):
+	label_addrs[label] = inst_addr
+
+def process_line(line):
+	global inst_addr
+	comment_idx = line.find(comment_symbol)
+	if(comment_idx == 0): 
+		return
+	#Remove eveything after comment
+	line = line[0:comment_idx]
+	#Remove whitespace
+	line = line.strip()
+	
+	if(len(line) == 0):
+		return
+	
+	#If line is a label
+	label_idx = line.find(label_symbol);
+	if(label_idx != -1):
+		#Process as label
+		line = line.replace(label_symbol,"")
+		process_label(line)
+	else:
+		process_asm(line)
+		inst_addr = inst_addr + 1;
+	return
+
+#Process each line of file
+for line in f:
+	process_line(line)
+
+print full_str
+

@@ -1,0 +1,68 @@
+; Does not work...
+;Just two instructions
+;Jump to main (cheap, avoid knowing label addresses in future)
+sc 26
+jmp
+smalln:
+;Return 1
+sc 1
+srtn
+
+;Fib
+fib:
+;Stack constant 2 for compare
+sc 2
+;Get the local address for n (relative addr 0)
+slaa 0
+;use the absolute addr to load contents onto stack
+sl
+;first_pop < second_pop, set compare flag
+; n < 2
+sslt
+;Stack value for smalln
+sc smalln
+;Jump if not zero (1)
+jnz
+
+;Not a small n so
+;Substract 1 (first pop minus second)
+;Stack 1
+sc 1
+;Load n again
+slaa 0
+sl
+;Substract n-1
+ssub
+;Stack 1 for the number of args
+sc 1
+;Stack addr of fib
+sc fib
+;Do call to fib (have addr, # args, n)
+scall
+;Returned from scall, n-1 value on top of stack
+;Substract 2 (first pop minus second)
+;Stack 2
+sc 2
+;Load n again
+slaa 0
+sl
+;Substract n-2
+ssub
+;Stack 1 for the number of args
+sc 1
+;Stack addr of fib
+sc fib
+;Do call to fib (have addr, # args, n)
+scall
+;Now have two scall results on top of stack
+;Add them
+sadd
+;And return
+srtn
+
+main:
+;Do fib of 4
+sc 4 ; arg
+sc 1 ; num of args
+sc fib ; addr of fib
+scall
